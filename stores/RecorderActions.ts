@@ -13,6 +13,7 @@ const get = useChatStore.getState;
 const set = useChatStore.setState;
 
 export const sendAudioData = async (blob: Blob) => {
+  console.log("yak sendAudioData...");
   const { audioChunks } = get();
   const newMessage = {
     id: uuidv4(),
@@ -30,7 +31,7 @@ export const sendAudioData = async (blob: Blob) => {
 
 export const startRecording = async (router: NextRouter) => {
   let recorder = get().recorder;
-  console.log("start");
+  console.log("yak startRecording.... ");
   set((state) => ({ audioChunks: [] }));
   clearTimeout(get().recorderTimeout);
 
@@ -40,6 +41,7 @@ export const startRecording = async (router: NextRouter) => {
   };
 
   const onRecordingStop = () => {
+    console.log("yak onRecordingStop.... ");
     const submitNextAudio = get().submitNextAudio;
     console.log("stop, submit=", submitNextAudio);
     const cleanup = () => {
@@ -55,6 +57,7 @@ export const startRecording = async (router: NextRouter) => {
     };
 
     if (submitNextAudio) {
+      console.log("yak submitNextAudio.... ");
       const blob = new Blob(get().audioChunks, { type: "audio/webm" });
 
       sendAudioData(blob).then(cleanup, cleanup);
@@ -64,6 +67,7 @@ export const startRecording = async (router: NextRouter) => {
   };
 
   if (!recorder) {
+    console.log("yak !recorder.... ");
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -99,7 +103,7 @@ export const startRecording = async (router: NextRouter) => {
 };
 
 export const stopRecording = async (submit: boolean) => {
-  console.log("Stopping recording... submit=", submit);
+  console.log("yak Stopping recording... submit=", submit);
   const { audioChunks, recorder, submitNextAudio } = get();
 
   set((state) => ({ submitNextAudio: submit }));
@@ -118,7 +122,7 @@ export const stopRecording = async (submit: boolean) => {
 };
 
 export const destroyRecorder = async () => {
-  console.log("Destroying recorder...", get().recorder);
+  console.log("yak Destroy recorder...", get().recorder);
   const { audioChunks, recorder } = get();
 
   if (recorder) {
@@ -128,6 +132,7 @@ export const destroyRecorder = async () => {
 };
 
 export const submitAudio = async (newMessage: Message, blob: Blob) => {
+  console.log("yak submitAudio...", get().recorder);
   const apiUrl = "https://api.openai.com/v1/audio/transcriptions";
 
   const { apiKey, settingsForm } = get();
